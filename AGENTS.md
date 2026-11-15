@@ -3,7 +3,7 @@
 <!-- graffino-agentic:begin v1 -->
 ## How we work here
 
-**Before work:** fetch and fast-forward pull when a remote and upstream are configured. This repository currently has neither.
+**Before work:** fetch and fast-forward pull when a remote and upstream are configured.
 
 **Always load** (indexes; open the entry before relying on it): `docs/agents/DECISIONS.md`, `docs/agents/PATTERNS.md`, `docs/agents/CONTRACTS.md`, `docs/agents/OPEN-QUESTIONS.md`, and `CONTEXT.md`.
 
@@ -40,17 +40,18 @@ Ask: **does this change something already approved?**
 <!-- graffino-agentic:end -->
 
 ## 1. What this repo is
-The repository has no project files or commits yet. Its purpose, users, and runtime are unknown. See Q-001.
+The repository contains the approved P25 plan for a web application that reconciles an association's bank statements, obligations, payments, penalties, and reports, with a member portal. The application code and runtime are not implemented yet; see Q-001 for runtime details.
 
 ## 2. Stack and commands
-No stack or project commands can be verified. See Q-002.
+The planned stack is recorded in D-001. No project commands or installed versions are verified yet; see Q-002.
 
 ## 3. Layout
 - `docs/agents/` — Graffino agent guidance and knowledge ledger.
 - `.agents/skills/` — Codex project skills for planning and building.
 
 ## 4. Rules for this repo
-No project-specific rules can be inferred yet.
+- Follow the approved constraints in `docs/agents/DECISIONS.md`.
+- Keep DEMO and REAL data strictly separated as specified in D-006.
 
 ## 5. Release
 No release process is documented. See Q-003.
@@ -59,3 +60,4 @@ No release process is documented. See Q-003.
 - Run the project's verified tests and build checks once they are documented.
 - Keep the agent knowledge ledger lint clean.
 - Record new practices as candidate patterns and unknowns as Q- entries.
+- Keep DEMO and REAL data separated and preserve exact monetary and reconciliation calculations.
