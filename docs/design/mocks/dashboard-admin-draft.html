@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="ro">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>P25 · Dashboard administrator · Draft DS-001</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --canvas: #f4f7fb;
+        --surface: #fff;
+        --text: #172033;
+        --muted: #536176;
+        --border: #d7e0eb;
+        --primary: #2457a7;
+        --primary-soft: #eaf1fc;
+        --success: #166534;
+        --success-soft: #effaf2;
+        --warning: #7a4100;
+        --warning-soft: #fff3d9;
+        --error: #a3231a;
+        --error-soft: #fff1ef;
+        --radius-card: 14px;
+        --shadow-card: 0 1px 3px rgb(23 32 51 / 8%);
+        font-family: Inter, Arial, sans-serif;
+        font-size: 16px;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; padding: 28px; color: var(--text); background: var(--canvas); }
+      h1, h2, h3, h4, p { margin-top: 0; }
+      h1 { margin-bottom: 8px; font-size: clamp(28px, 3vw, 38px); letter-spacing: -.03em; }
+      h2 { margin: 0 0 16px; font-size: 23px; }
+      h3 { margin: 0 0 10px; font-size: 18px; }
+      h4 { margin: 0; font-size: 15px; }
+      .intro { max-width: 860px; margin-bottom: 22px; color: var(--muted); line-height: 1.55; }
+      .draft { display: inline-flex; min-height: 34px; align-items: center; margin-bottom: 12px; padding: 5px 12px; border: 1px solid #e7bd77; border-radius: 999px; color: var(--warning); background: var(--warning-soft); font-size: 13px; font-weight: 800; letter-spacing: .08em; }
+      .viewport { margin: 34px 0 46px; }
+      .viewport > p { color: var(--muted); line-height: 1.5; }
+      .states { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+      .frame { min-width: 0; padding: 14px; border: 1px solid var(--border); border-radius: 18px; background: #eaf0f7; }
+      .frame-label { margin: 0 0 10px 2px; color: #344258; font-size: 13px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+      .app { display: grid; grid-template-columns: 218px minmax(0, 1fr); min-height: 720px; overflow: hidden; border: 1px solid var(--border); border-radius: 12px; background: var(--canvas); box-shadow: var(--shadow-card); }
+      .sidebar { display: flex; flex-direction: column; gap: 28px; padding: 24px 16px; border-right: 1px solid var(--border); background: var(--surface); }
+      .brand { padding: 0 10px; font-size: 13px; font-weight: 850; letter-spacing: .09em; }
+      .demo { display: inline-flex; min-height: 34px; align-items: center; justify-content: center; padding: 6px 11px; border-radius: 999px; color: #663700; background: #ffedc9; font-size: 12px; font-weight: 850; white-space: nowrap; }
+      .side-nav { display: grid; gap: 5px; }
+      .nav-item { display: flex; min-height: 46px; align-items: center; gap: 10px; padding: 0 11px; border-radius: 9px; color: #344258; font-size: 14px; font-weight: 650; text-decoration: none; }
+      .nav-item.active { color: #163f7e; background: var(--primary-soft); }
+      .nav-icon { width: 20px; text-align: center; font-size: 17px; }
+      .side-note { margin-top: auto; padding: 12px; border: 1px solid var(--border); border-radius: 10px; color: var(--muted); font-size: 13px; line-height: 1.45; }
+      .workspace { min-width: 0; }
+      .topbar { display: flex; min-height: 78px; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 24px; border-bottom: 1px solid var(--border); background: var(--surface); }
+      .context { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+      .context-box { display: grid; gap: 3px; min-width: 150px; padding: 6px 10px; border: 1px solid var(--border); border-radius: 9px; background: var(--surface); }
+      .context-box small { color: var(--muted); font-size: 12px; }
+      .context-box strong { font-size: 14px; }
+      .account-period { display: flex; flex-wrap: wrap; gap: 8px; }
+      .content { padding: 22px 24px 26px; }
+      .title-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
+      .title-row p { margin: 5px 0 0; color: var(--muted); font-size: 14px; }
+      .button { display: inline-flex; min-height: 48px; align-items: center; justify-content: center; gap: 8px; padding: 0 17px; border: 0; border-radius: 10px; color: #fff; background: var(--primary); font: inherit; font-size: 15px; font-weight: 750; text-decoration: none; cursor: pointer; }
+      .button.secondary { border: 1px solid var(--border); color: var(--text); background: var(--surface); }
+      .button:focus-visible, .nav-item:focus-visible { outline: 3px solid #85a9e4; outline-offset: 2px; }
+      .section-title { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px; margin: 24px 0 10px; }
+      .section-title h3 { margin: 0; }
+      .section-title a { color: var(--primary); font-size: 14px; font-weight: 700; }
+      .balance-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+      .metric { min-width: 0; padding: 14px; border: 1px solid var(--border); border-radius: var(--radius-card); background: var(--surface); box-shadow: var(--shadow-card); }
+      .metric-label { display: block; min-height: 38px; margin-bottom: 9px; color: var(--muted); font-size: 13px; line-height: 1.4; }
+      .metric-value { display: block; font-size: 19px; font-weight: 800; letter-spacing: -.02em; white-space: nowrap; }
+      .metric-note { display: block; margin-top: 6px; color: var(--muted); font-size: 12px; }
+      .metric.delta { border-color: #b8ddc3; background: var(--success-soft); }
+      .split { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+      .panel { min-width: 0; padding: 16px; border: 1px solid var(--border); border-radius: var(--radius-card); background: var(--surface); box-shadow: var(--shadow-card); }
+      .panel p { margin-bottom: 0; color: var(--muted); font-size: 14px; line-height: 1.5; }
+      .count { display: inline-flex; min-width: 32px; min-height: 30px; align-items: center; justify-content: center; margin-left: 5px; padding: 2px 8px; border-radius: 999px; color: #163f7e; background: var(--primary-soft); font-size: 14px; font-weight: 800; }
+      .count.warning { color: var(--warning); background: var(--warning-soft); }
+      .list { display: grid; }
+      .list-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 12px 0; border-top: 1px solid #edf0f4; }
+      .list-row:first-child { border-top: 0; }
+      .row-main { display: grid; gap: 4px; min-width: 0; }
+      .row-main strong { overflow: hidden; font-size: 14px; text-overflow: ellipsis; white-space: nowrap; }
+      .row-main small, .row-side small { color: var(--muted); font-size: 13px; }
+      .row-side { display: grid; gap: 4px; justify-items: end; text-align: right; }
+      .status { display: inline-flex; min-height: 28px; align-items: center; padding: 3px 9px; border-radius: 999px; color: var(--success); background: var(--success-soft); font-size: 12px; font-weight: 750; white-space: nowrap; }
+      .status.warning { color: var(--warning); background: var(--warning-soft); }
+      .status.error { color: var(--error); background: var(--error-soft); }
+      .notice { margin: 0 0 16px; padding: 14px 16px; border: 1px solid; border-radius: 10px; font-size: 15px; line-height: 1.5; }
+      .notice.error { border-color: #efc4bf; color: #74231c; background: var(--error-soft); }
+      .notice.success { border-color: #b8ddc3; color: #14532d; background: var(--success-soft); }
+      .empty-box { display: grid; min-height: 130px; align-content: center; justify-items: center; padding: 18px; text-align: center; }
+      .empty-symbol { display: grid; width: 42px; height: 42px; margin-bottom: 10px; place-items: center; border-radius: 50%; color: var(--primary); background: var(--primary-soft); font-size: 22px; font-weight: 800; }
+      .skeleton { height: 54px; margin: 10px 0; border-radius: 9px; background: linear-gradient(90deg, #e8edf3 25%, #f7f9fb 50%, #e8edf3 75%); }
+      .skeleton.short { width: 48%; height: 18px; }
+      .skeleton-line { height: 16px; margin: 10px 0; border-radius: 6px; background: #e8edf3; }
+      .mobile-topbar, .mobile-nav { display: none; }
+      .viewport[aria-labelledby="desktop-title"] .states { grid-template-columns: 1fr; }
+      .viewport[aria-labelledby="mobile-title"] .app { width: min(100%, 390px); margin-inline: auto; }
+      .footnote { margin: 22px 0 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+      .state-heading { margin: 0 0 14px; color: var(--muted); font-size: 14px; font-weight: 700; }
+      @media (max-width: 1160px) {
+        .balance-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      }
+      @media (max-width: 760px) {
+        body { padding: 16px; }
+        .viewport[aria-labelledby="desktop-title"] { display: none; }
+        .viewport[aria-labelledby="mobile-title"] { display: block; }
+        .states { grid-template-columns: 1fr; }
+        .frame { width: 100%; min-width: 0; }
+        .app { display: block; width: 100%; min-width: 0; min-height: 0; }
+        .viewport[aria-labelledby="mobile-title"] .app { max-width: 390px; }
+        .sidebar { display: none; }
+        .mobile-topbar { display: flex; min-height: 64px; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 14px; border-bottom: 1px solid var(--border); background: var(--surface); }
+        .menu-button { display: inline-flex; min-height: 48px; align-items: center; gap: 8px; padding: 0 12px; border: 1px solid var(--border); border-radius: 9px; color: var(--text); background: var(--surface); font: inherit; font-size: 15px; font-weight: 700; }
+        .topbar { display: block; width: 100%; min-width: 0; min-height: 0; padding: 12px 14px; }
+        .account-period { display: grid; width: 100%; min-width: 0; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+        .context-box { width: 100%; min-width: 0; }
+        .context-box strong { overflow-wrap: anywhere; white-space: normal; }
+        .workspace, .content, main { width: 100%; min-width: 0; }
+        .content { padding: 16px 14px 18px; }
+        .title-row { display: grid; }
+        .title-row > .button { width: 100%; }
+        .balance-grid { width: 100%; grid-template-columns: minmax(0, 1fr); }
+        .metric:last-child { grid-column: 1 / -1; }
+        .split { width: 100%; grid-template-columns: minmax(0, 1fr); }
+        .panel { width: 100%; min-width: 0; }
+        .list-row { grid-template-columns: minmax(0, 1fr); }
+        .row-side { justify-items: start; text-align: left; }
+        .row-main, .row-main strong, .row-main small { min-width: 0; overflow-wrap: anywhere; white-space: normal; }
+        .metric-value { white-space: normal; overflow-wrap: anywhere; }
+        .mobile-nav { position: sticky; bottom: 0; z-index: 1; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; padding: 7px 5px max(7px, env(safe-area-inset-bottom)); border-top: 1px solid var(--border); background: var(--surface); }
+        .mobile-nav a { display: grid; min-height: 50px; align-content: center; justify-items: center; gap: 2px; border-radius: 8px; color: #344258; font-size: 12px; font-weight: 700; text-decoration: none; }
+        .mobile-nav a.active { color: #163f7e; background: var(--primary-soft); }
+        .mobile-nav a:focus-visible { outline: 3px solid #85a9e4; outline-offset: 1px; }
+        .context-box { min-width: 0; flex: 1 1 140px; }
+        .row-main strong { white-space: normal; }
+      }
+      @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; } }
+    </style>
+  </head>
+  <body>
+    <span class="draft">DS-001 · DRAFT · NEAPROBAT</span>
+    <h1>Dashboard administrator</h1>
+    <p class="intro">Mock de revizuire pentru P25. Valorile și identificatorii sunt placeholders, nu date din extrase reale. Contul și perioada sunt prezentate ca filtre de context; mediul DEMO este stabilit server-side în produs.</p>
+
+    <section class="viewport" aria-labelledby="desktop-title">
+      <h2 id="desktop-title">Desktop</h2>
+      <p>Previzualizări desktop în format lat. Pe ecranul acesta de prezentare, fiecare stare are propria ramă.</p>
+      <div class="states">
+        <article class="frame desktop-frame">
+          <p class="frame-label">Loading · Desktop</p>
+          <div class="app desktop-preview">
+            <aside class="sidebar"><div class="brand">ASOCIAȚIE · ADMINISTRARE</div><span class="demo">DEMO · DATE FICTIVE</span><nav class="side-nav" aria-label="Navigare principală"><a class="nav-item active" href="#desktop-title"><span class="nav-icon">⌂</span>Dashboard</a><a class="nav-item" href="#desktop-title"><span class="nav-icon">▤</span>Extrase bancare</a><a class="nav-item" href="#desktop-title"><span class="nav-icon">↔</span>Potriviri</a><a class="nav-item" href="#desktop-title"><span class="nav-icon">▦</span>Obligații</a><a class="nav-item" href="#desktop-title"><span class="nav-icon">⌂</span>Apartamente</a><a class="nav-item" href="#desktop-title"><span class="nav-icon">▧</span>Rapoarte</a></nav><div class="side-note">Mediu activ<br /><strong>DEMO</strong> · date fictive</div></aside>
+            <div class="workspace"><header class="topbar"><div class="account-period"><div class="context-box"><small>Cont bancar</small><strong>Cont selectat · identificator mascat</strong></div><div class="context-box"><small>Perioada</small><strong>[Lună / an]</strong></div></div><span class="demo">DEMO</span></header><main class="content"><div class="title-row"><div><h3>Se încarcă dashboard-ul</h3><p>Cont selectat · perioadă selectată</p></div></div><div class="balance-grid"><div class="metric"><div class="skeleton short"></div><div class="skeleton"></div></div><div class="metric"><div class="skeleton short"></div><div class="skeleton"></div></div><div class="metric"><div class="skeleton short"></div><div class="skeleton"></div></div></div><div class="split"><section class="panel"><div class="skeleton short"></div><div class="skeleton"></div><div class="skeleton"></div></section><section class="panel"><div class="skeleton short"></div><div class="skeleton"></div><div class="skeleton"></div></section></div><p class="footnote">Se încarcă soldurile, potrivirile și importurile…</p></main></div>
+          </div>
+        </article>
+
+        <article class="frame desktop-frame">
+          <p class="frame-label">Empty · Desktop</p>
+          <div class="app desktop-preview">
+            <aside class="sidebar"><div class="brand">ASOCIAȚIE · ADMINISTRARE</div><span class="demo">DEMO · DATE FICTIVE</span><nav class="side-nav" aria-label="Navigare principală"><a class="nav-item active" href="#desktop-title"><span class="nav-icon">⌂</span>Dashboard</a><a class="nav-item" href="#desktop-title"><span class="nav-icon">▤</span>Extrase bancare</a><a class="nav-item" href="#desktop-title"><span class="nav-icon">↔</span>Potriviri</a><a class="nav-item" href="#desktop-title"><span class="nav-icon">▦</span>Obligații</a><a class="nav-item" href="#desktop-title"><span class="nav-icon">⌂</span>Apartamente</a><a class="nav-item" href="#desktop-title"><span class="nav-icon">▧</span>Rapoarte</a></nav><div class="side-note">Mediu activ<br /><strong>DEMO</strong> · date fictive</div></aside>
+            <div class="workspace"><header class="topbar"><div class="account-period"><div class="context-box"><small>Cont bancar</small><strong>Cont selectat · identificator mascat</strong></div><div class="context-box"><small>Perioada</small><strong>[Lună / an]</strong></div></div><span class="demo">DEMO</span></header><main class="content"><div class="title-row"><div><h3>Bun venit</h3><p>Nu există încă date pentru contul și perioada selectate.</p></div><button class="button" type="button">＋ &nbsp; Adaugă extras</button></div><div class="balance-grid"><div class="metric"><span class="metric-label">Sold inițial</span><strong class="metric-value">— RON</strong></div><div class="metric"><span class="metric-label">Încasări</span><strong class="metric-value">— RON</strong></div><div class="metric"><span class="metric-label">Cheltuieli</span><strong class="metric-value">— RON</strong></div><div class="metric"><span class="metric-label">Sold final</span><strong class="metric-value">— RON</strong></div><div class="metric delta"><span class="metric-label">Diferență de reconciliere</span><strong class="metric-value">— RON</strong></div></div><div class="split"><section class="panel"><h3>Tranzacții <span class="count">—</span></h3><p>Nu există tranzacții potrivite sau de verificat în perioada selectată.</p><div class="empty-box"><span class="empty-symbol">↔</span><strong>După import, tranzacțiile vor apărea aici.</strong></div></section><section class="panel"><h3>Ultimele importuri</h3><p>Nu există importuri pentru acest cont.</p><div class="empty-box"><span class="empty-symbol">▤</span><strong>Nu au fost detectate duplicate.</strong></div></section></div><section class="panel" style="margin-top:14px"><h3>Apartamente cu restanțe sau plăți parțiale</h3><p>Nu există înregistrări pentru perioada selectată.</p></section></main></div>
+          </div>
+        </article>
+
+        <article class="frame desktop-frame">
+          <p class="frame-label">Error · Desktop</p>
+          <div class="app desktop-preview">
+            <aside class="sidebar"><div class="brand">ASOCIAȚIE · ADMINISTRARE</div><span class="demo">DEMO · DATE FICTIVE</span><nav class="side-nav" aria-label="Navigare principală"><a class="nav-item active" href="#desktop-title"><span class="nav-icon">⌂</span>Dashboard</a><a class="nav-item" href="#desktop-title"><span class="nav-icon">▤</span>Extrase bancare</a><a class="nav-item" href="#desktop-title"><span class="nav-icon">↔</span>Potriviri</a><a class="nav-item" href="#desktop-title"><span class="nav-icon">▦</span>Obligații</a><a class="nav-item" href="#desktop-title"><span class="nav-icon">⌂</span>Apartamente</a><a class="nav-item" href="#desktop-title"><span class="nav-icon">▧</span>Rapoarte</a></nav><div class="side-note">Mediu activ<br /><strong>DEMO</strong> · date fictive</div></aside>
+            <div class="workspace"><header class="topbar"><div class="account-period"><div class="context-box"><small>Cont bancar</small><strong>Cont selectat · identificator mascat</strong></div><div class="context-box"><small>Perioada</small><strong>[Lună / an]</strong></div></div><span class="demo">DEMO</span></header><main class="content"><div class="title-row"><div><h3>Dashboard indisponibil</h3><p>Cont selectat · perioadă selectată</p></div></div><div class="notice error" role="alert"><strong>Nu am putut încărca sumarul bancar.</strong><br />Soldurile și listele nu sunt afișate. Reîncearcă încărcarea.</div><button class="button" type="button">Reîncearcă</button><div class="balance-grid" style="margin-top:18px"><div class="metric"><span class="metric-label">Sold inițial</span><strong class="metric-value">— RON</strong></div><div class="metric"><span class="metric-label">Încasări</span><strong class="metric-value">— RON</strong></div><div class="metric"><span class="metric-label">Cheltuieli</span><strong class="metric-value">— RON</strong></div><div class="metric"><span class="metric-label">Sold final</span><strong class="metric-value">— RON</strong></div><div class="metric"><span class="metric-label">Diferență</span><strong class="metric-value">— RON</strong></div></div><p class="footnote">Ultimele importuri și apartamentele restante vor apărea după ce datele pot fi citite.</p></main></div>
+          </div>
+        </article>
+
+        <article class="frame desktop-frame">
+          <p class="frame-label">Success · Desktop</p>
+          <div class="app desktop-preview">
+            <aside class="sidebar"><div class="brand">ASOCIAȚIE · ADMINISTRARE</div><span class="demo">DEMO · DATE FICTIVE</span><nav class="side-nav" aria-label="Navigare principală"><a class="nav-item active" href="#desktop-title"><span class="nav-icon">⌂</span>Dashboard</a><a class="nav-item" href="#desktop-title"><span class="nav-icon">▤</span>Extrase bancare</a><a class="nav-item" href="#desktop-title"><span class="nav-icon">↔</span>Potriviri</a><a class="nav-item" href="#desktop-title"><span class="nav-icon">▦</span>Obligații</a><a class="nav-item" href="#desktop-title"><span class="nav-icon">⌂</span>Apartamente</a><a class="nav-item" href="#desktop-title"><span class="nav-icon">▧</span>Rapoarte</a></nav><div class="side-note">Mediu activ<br /><strong>DEMO</strong> · date fictive</div></aside>
+            <div class="workspace"><header class="topbar"><div class="account-period"><div class="context-box"><small>Cont bancar</small><strong>Cont selectat · identificator mascat</strong></div><div class="context-box"><small>Perioada</small><strong>[Lună / an]</strong></div></div><span class="demo">DEMO · DATE FICTIVE</span></header><main class="content"><div class="title-row"><div><h3>Sumar financiar</h3><p>Contul și perioada selectate · valorile sunt placeholders</p></div><button class="button secondary" type="button">Schimbă contul / perioada</button></div><div class="balance-grid"><div class="metric"><span class="metric-label">Sold inițial</span><strong class="metric-value">— RON</strong></div><div class="metric"><span class="metric-label">Încasări</span><strong class="metric-value">— RON</strong></div><div class="metric"><span class="metric-label">Cheltuieli</span><strong class="metric-value">— RON</strong></div><div class="metric"><span class="metric-label">Sold final</span><strong class="metric-value">— RON</strong><small class="metric-note">Sold inițial + încasări − cheltuieli</small></div><div class="metric delta"><span class="metric-label">Diferență de reconciliere</span><strong class="metric-value">— RON</strong><small class="metric-note">Țintă: 0 RON după confirmare</small></div></div><div class="split"><section class="panel"><div class="section-title"><h3>Tranzacții</h3><a href="#desktop-title">Vezi toate</a></div><div class="list-row"><div class="row-main"><strong>Potrivite</strong><small>Asociate cu membru sau obligație</small></div><span class="count">—</span></div><div class="list-row"><div class="row-main"><strong>De verificat</strong><small>Așteaptă revizuirea administratorului</small></div><span class="count warning">—</span></div></section><section class="panel"><div class="section-title"><h3>Ultimele importuri</h3><a href="#desktop-title">Vezi extrase</a></div><div class="list-row"><div class="row-main"><strong>Import DEMO · [fișier fictiv]</strong><small>[Dată și oră] · [cont selectat]</small></div><span class="status">Importat</span></div><div class="list-row"><div class="row-main"><strong>Duplicate detectate</strong><small>Elemente păstrate pentru verificare</small></div><span class="status warning">—</span></div></section></div><section class="panel" style="margin-top:14px"><div class="section-title"><h3>Apartamente cu restanțe sau plăți parțiale</h3><a href="#desktop-title">Vezi toate</a></div><div class="list-row"><div class="row-main"><strong>Apartament DEMO · [cod]</strong><small>Restanță: — RON · perioadă: [lună]</small></div><span class="status warning">Restanță</span></div><div class="list-row"><div class="row-main"><strong>Apartament DEMO · [cod]</strong><small>Obligație: — RON · plată parțială: — RON</small></div><span class="status warning">Plată parțială</span></div></section></main></div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="viewport" aria-labelledby="mobile-title">
+      <h2 id="mobile-title">Mobil · lățime de referință 390 px</h2>
+      <p>Navigarea laterală devine buton „Meniu”, iar scurtăturile principale apar într-o bară de navigare de jos. Conținutul se rearanjează într-o singură coloană.</p>
+      <div class="states">
+        <article class="frame">
+          <p class="frame-label">Loading · Mobil</p>
+          <div class="app"><header class="mobile-topbar"><button class="menu-button" type="button">☰ &nbsp; Meniu</button><span class="demo">DEMO</span></header><header class="topbar"><div class="account-period"><div class="context-box"><small>Cont bancar</small><strong>Cont selectat · mascat</strong></div><div class="context-box"><small>Perioada</small><strong>[Lună / an]</strong></div></div></header><main class="content"><h3>Se încarcă dashboard-ul</h3><div class="balance-grid"><div class="metric"><div class="skeleton short"></div><div class="skeleton"></div></div><div class="metric"><div class="skeleton short"></div><div class="skeleton"></div></div></div><section class="panel"><div class="skeleton short"></div><div class="skeleton"></div><div class="skeleton"></div></section><section class="panel" style="margin-top:14px"><div class="skeleton short"></div><div class="skeleton"></div></section></main><nav class="mobile-nav" aria-label="Navigare mobilă"><a class="active" href="#mobile-title">⌂<span>Dashboard</span></a><a href="#mobile-title">▤<span>Extrase</span></a><a href="#mobile-title">↔<span>Potriviri</span></a><a href="#mobile-title">⋯<span>Mai mult</span></a></nav></div>
+        </article>
+        <article class="frame">
+          <p class="frame-label">Empty · Mobil</p>
+          <div class="app"><header class="mobile-topbar"><button class="menu-button" type="button">☰ &nbsp; Meniu</button><span class="demo">DEMO</span></header><header class="topbar"><div class="account-period"><div class="context-box"><small>Cont bancar</small><strong>Cont selectat · mascat</strong></div><div class="context-box"><small>Perioada</small><strong>[Lună / an]</strong></div></div></header><main class="content"><div class="title-row"><div><h3>Bun venit</h3><p>Nu există date pentru selecția curentă.</p></div><button class="button" type="button">＋ &nbsp; Adaugă extras</button></div><div class="balance-grid"><div class="metric"><span class="metric-label">Sold inițial</span><strong class="metric-value">— RON</strong></div><div class="metric"><span class="metric-label">Încasări</span><strong class="metric-value">— RON</strong></div><div class="metric"><span class="metric-label">Cheltuieli</span><strong class="metric-value">— RON</strong></div><div class="metric"><span class="metric-label">Sold final</span><strong class="metric-value">— RON</strong></div><div class="metric"><span class="metric-label">Diferență</span><strong class="metric-value">— RON</strong></div></div><section class="panel empty-box"><span class="empty-symbol">▤</span><strong>Nu există importuri sau tranzacții.</strong><p>După import, se vor afișa potrivirile, duplicatele și cazurile de verificat.</p></section><section class="panel" style="margin-top:14px"><h3>Apartamente cu restanțe sau plăți parțiale</h3><p>Nu există înregistrări pentru perioada selectată.</p></section></main><nav class="mobile-nav" aria-label="Navigare mobilă"><a class="active" href="#mobile-title">⌂<span>Dashboard</span></a><a href="#mobile-title">▤<span>Extrase</span></a><a href="#mobile-title">↔<span>Potriviri</span></a><a href="#mobile-title">⋯<span>Mai mult</span></a></nav></div>
+        </article>
+        <article class="frame">
+          <p class="frame-label">Error · Mobil</p>
+          <div class="app"><header class="mobile-topbar"><button class="menu-button" type="button">☰ &nbsp; Meniu</button><span class="demo">DEMO</span></header><header class="topbar"><div class="account-period"><div class="context-box"><small>Cont bancar</small><strong>Cont selectat · mascat</strong></div><div class="context-box"><small>Perioada</small><strong>[Lună / an]</strong></div></div></header><main class="content"><h3>Dashboard indisponibil</h3><div class="notice error" role="alert"><strong>Nu am putut încărca sumarul bancar.</strong><br />Reîncearcă. Valorile nu sunt afișate.</div><button class="button" type="button">Reîncearcă</button><div class="balance-grid" style="margin-top:18px"><div class="metric"><span class="metric-label">Sold inițial</span><strong class="metric-value">— RON</strong></div><div class="metric"><span class="metric-label">Sold final</span><strong class="metric-value">— RON</strong></div></div></main><nav class="mobile-nav" aria-label="Navigare mobilă"><a class="active" href="#mobile-title">⌂<span>Dashboard</span></a><a href="#mobile-title">▤<span>Extrase</span></a><a href="#mobile-title">↔<span>Potriviri</span></a><a href="#mobile-title">⋯<span>Mai mult</span></a></nav></div>
+        </article>
+        <article class="frame">
+          <p class="frame-label">Success · Mobil</p>
+          <div class="app"><header class="mobile-topbar"><button class="menu-button" type="button">☰ &nbsp; Meniu</button><span class="demo">DEMO · FICTIV</span></header><header class="topbar"><div class="account-period"><div class="context-box"><small>Cont bancar</small><strong>Cont selectat · mascat</strong></div><div class="context-box"><small>Perioada</small><strong>[Lună / an]</strong></div></div></header><main class="content"><div class="title-row"><div><h3>Sumar financiar</h3><p>Contul și perioada selectate</p></div><button class="button secondary" type="button">Schimbă selecția</button></div><div class="balance-grid"><div class="metric"><span class="metric-label">Sold inițial</span><strong class="metric-value">— RON</strong></div><div class="metric"><span class="metric-label">Încasări</span><strong class="metric-value">— RON</strong></div><div class="metric"><span class="metric-label">Cheltuieli</span><strong class="metric-value">— RON</strong></div><div class="metric"><span class="metric-label">Sold final</span><strong class="metric-value">— RON</strong></div><div class="metric delta"><span class="metric-label">Diferență de reconciliere</span><strong class="metric-value">— RON</strong></div></div><section class="panel"><h3>Tranzacții</h3><div class="list-row"><div class="row-main"><strong>Potrivite</strong><small>Asociate</small></div><span class="count">—</span></div><div class="list-row"><div class="row-main"><strong>De verificat</strong><small>Necesită revizuire</small></div><span class="count warning">—</span></div></section><section class="panel" style="margin-top:14px"><h3>Ultimele importuri</h3><div class="list-row"><div class="row-main"><strong>Import DEMO · [fișier fictiv]</strong><small>[Dată și oră]</small></div><span class="status">Importat</span></div><div class="list-row"><div class="row-main"><strong>Duplicate detectate</strong><small>De verificat</small></div><span class="status warning">—</span></div></section><section class="panel" style="margin-top:14px"><h3>Apartamente cu restanțe / plăți parțiale</h3><div class="list-row"><div class="row-main"><strong>Apartament DEMO · [cod]</strong><small>Restanță: — RON</small></div><span class="status warning">Restanță</span></div><div class="list-row"><div class="row-main"><strong>Apartament DEMO · [cod]</strong><small>Plată parțială: — RON</small></div><span class="status warning">Parțială</span></div></section></main><nav class="mobile-nav" aria-label="Navigare mobilă"><a class="active" href="#mobile-title">⌂<span>Dashboard</span></a><a href="#mobile-title">▤<span>Extrase</span></a><a href="#mobile-title">↔<span>Potriviri</span></a><a href="#mobile-title">⋯<span>Mai mult</span></a></nav></div>
+        </article>
+      </div>
+    </section>
+
+    <p class="intro"><strong>Revizuire necesară:</strong> ierarhia, vocabularul, navigarea, valorile și tokens rămân propuneri. Acest fișier este un mock static, nu o funcționalitate a aplicației și nu este aprobat pentru implementare.</p>
+  </body>
+</html>
